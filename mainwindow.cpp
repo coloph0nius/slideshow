@@ -4,10 +4,10 @@
 #include <QDir>
 #include <QStringList>
 #include <QTimer>
+#include <QDirIterator>
 
 
-
-static QString dirpath="F:/Bilder/test/";
+static QString dirpath="F:/Bilder/2019/";
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-	ui->ImageLabel->setStyleSheet("background-color:black;");
+    ui->ImageLabel->setStyleSheet("background-color:black;");
 
     picnum = 0; //because some old g++ variants won't accept declaring variables in the header file
     //Get resolution
@@ -30,11 +30,10 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         QCoreApplication::quit();
     }
-
-    //Apply filter, show only jpg files
-    QStringList filters;
-    filters<<"*.jpg"<<"*.JPG";
-    images = dir.entryList(filters); //populate images array with the picture names in the folder
+    //Iterator searches recursively in directory and subdirectories for *jpg* files
+    QDirIterator it(dir.path(),QStringList() << "*.jpg"<<"*.JPG", QDir::Files, QDirIterator::Subdirectories);
+    while (it.hasNext())
+        images.append(it.next());
 
     //Start Timer which loads new image every 5 seconds
     QTimer *timer = new QTimer(this);
@@ -46,8 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::newImage()
 {
-    filename = dirpath+images.at(picnum); //build the path to the displayed image
-    QPixmap pixmap(filename); //create a pixmap with the displayed image
+    QPixmap pixmap(images.at(picnum)); //create a pixmap with the displayed image
     ui->ImageLabel->setPixmap(pixmap.scaled(w,h, Qt::KeepAspectRatio)); //scale image to screen resolution, keep aspect ratio
     picnum++; //next image
     if (picnum >= images.size()) //if we reached the end, start from the beginning
