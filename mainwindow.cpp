@@ -7,7 +7,7 @@
 
 
 
-static QString dirpath="F:/Bilder/2019/Wilhelma/";
+static QString dirpath="F:/Bilder/test/";
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 	ui->ImageLabel->setStyleSheet("background-color:black;");
 
+    picnum = 0; //because some old g++ variants won't accept declaring variables in the header file
     //Get resolution
     rec = QApplication::desktop()->screenGeometry(); //this creates a rectangle over the whole screen
     h = rec.height(); //get the height from the fullscreen rectangle

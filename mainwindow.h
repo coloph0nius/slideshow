@@ -19,7 +19,7 @@ private:
     Ui::MainWindow *ui;
     int h;
     int w;
-    int picnum = 0;
+    int picnum;
     QString filename;
     QString imageno;
     QRect rec;
