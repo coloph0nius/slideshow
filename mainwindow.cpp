@@ -2,17 +2,12 @@
 #include "ui_mainwindow.h"
 #include <QDesktopWidget>
 #include <QDir>
-#include <QDebug>
 #include <QStringList>
 #include <QTimer>
-#include <time.h>
-#include <algorithm>
 
 
-QStringList images;
-QString dirpath="/media/usb0/";
-int list[100000];
 
+static QString dirpath="F:/Bilder/2019/Wilhelma/";
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -21,25 +16,57 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 	ui->ImageLabel->setStyleSheet("background-color:black;");
-    picnum=0;
 
     //Get resolution
-    QRect rec = QApplication::desktop()->screenGeometry();
-    h = rec.height();
-    w = rec.width();
+    rec = QApplication::desktop()->screenGeometry(); //this creates a rectangle over the whole screen
+    h = rec.height(); //get the height from the fullscreen rectangle
+    w = rec.width(); //get the width from the fullscreen rectangle
 
     //Set path
     QDir dir;
     dir.setPath(dirpath);
     if (!dir.exists())
-        qDebug()<<"Folder not found!";
+    {
+        QCoreApplication::quit();
+    }
 
     //Apply filter, show only jpg files
     QStringList filters;
     filters<<"*.jpg"<<"*.JPG";
-    images=dir.entryList(filters);
-    limit=images.size();
+    images = dir.entryList(filters); //populate images array with the picture names in the folder
 
+    //Start Timer which loads new image every 5 seconds
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(newImage()));
+    timer->setInterval(5000);
+    timer->start();
+}
+
+
+void MainWindow::newImage()
+{
+    filename = dirpath+images.at(picnum); //build the path to the displayed image
+    QPixmap pixmap(filename); //create a pixmap with the displayed image
+    ui->ImageLabel->setPixmap(pixmap.scaled(w,h, Qt::KeepAspectRatio)); //scale image to screen resolution, keep aspect ratio
+    picnum++; //next image
+    if (picnum >= images.size()) //if we reached the end, start from the beginning
+    {
+        picnum = 0;
+    }
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+
+
+/*
+    #include <time.h>
+    #include <algorithm>
+
+    int list[100000]; //only used for random order
     //Create a random picture order
     srand(time(0));
     int randpiclist[limit];
@@ -52,32 +79,4 @@ MainWindow::MainWindow(QWidget *parent) :
     //for(int i=0; i<limit;i++)qDebug()<<"first occurance"<<list[i];
     //qDebug()<<"sizeof randpiclist and list:"<<limit;
     //for(int i=0; i<limit;i++) {qDebug()<<images.at(i);}
-
-    //Start Timer which loads new image
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(newImage()));
-    timer->setInterval(5000);
-    timer->start();
-
-
-}
-
-
-void MainWindow::newImage()
-{
-    QString filename;
-    QString imageno;
-    imageno=images.at(list[picnum]);
-    filename=dirpath;
-    filename.append(imageno);
-    QPixmap pixmap(filename);
-    ui->ImageLabel->setPixmap(pixmap.scaled(w,h, Qt::KeepAspectRatio));
-    picnum++;
-    if (picnum>=limit)
-        picnum=0;
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
+*/

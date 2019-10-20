@@ -19,8 +19,11 @@ private:
     Ui::MainWindow *ui;
     int h;
     int w;
-    int picnum;
-    int limit;
+    int picnum = 0;
+    QString filename;
+    QString imageno;
+    QRect rec;
+    QStringList images;
 
 private slots:
    void newImage();
