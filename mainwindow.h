@@ -24,9 +24,11 @@ private:
     QString imageno;
     QRect rec;
     QStringList images;
+    QPixmap pixmap;
 
 private slots:
    void newImage();
+   void errorImage();
 };
 
 #endif // MAINWINDOW_H

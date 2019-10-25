@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QTimer>
 #include <QDirIterator>
+#include <QDebug>
 
 
 static QString dirpath="F:/Bilder/2019/";
@@ -26,20 +27,23 @@ MainWindow::MainWindow(QWidget *parent) :
     //Set path
     QDir dir;
     dir.setPath(dirpath);
-    if (!dir.exists())
+    if (!dir.exists() || dir.isEmpty())
     {
-        QCoreApplication::quit();
+        errorImage();
     }
-    //Iterator searches recursively in directory and subdirectories for *jpg* files
-    QDirIterator it(dir.path(),QStringList() << "*.jpg"<<"*.JPG", QDir::Files, QDirIterator::Subdirectories);
-    while (it.hasNext())
-        images.append(it.next());
+    else
+    {
+        //Iterator searches recursively in directory and subdirectories for *jpg* files
+        QDirIterator it(dir.path(),QStringList() << "*.jpg"<<"*.JPG", QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext())
+            images.append(it.next());
 
-    //Start Timer which loads new image every 5 seconds
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(newImage()));
-    timer->setInterval(5000);
-    timer->start();
+        //Start Timer which loads new image every 5 seconds
+        QTimer *timer = new QTimer(this);
+        connect(timer, SIGNAL(timeout()), this, SLOT(newImage()));
+        timer->setInterval(5000);
+        timer->start();
+    }
 }
 
 
@@ -52,6 +56,13 @@ void MainWindow::newImage()
     {
         picnum = 0;
     }
+}
+
+
+void MainWindow::errorImage()
+{
+    QPixmap pixmap("F:/temp/404.jpg"); //create a pixmap with the displayed image
+    ui->ImageLabel->setPixmap(pixmap.scaled(w,h, Qt::KeepAspectRatio)); //scale image to screen resolution, keep aspect ratio
 }
 
 MainWindow::~MainWindow()
