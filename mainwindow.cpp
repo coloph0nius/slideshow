@@ -5,10 +5,9 @@
 #include <QStringList>
 #include <QTimer>
 #include <QDirIterator>
-#include <QDebug>
 
 
-static QString dirpath="F:/Bilder/2019/";
+static QString dirpath="F:/temp/test/";
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -27,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Set path
     QDir dir;
     dir.setPath(dirpath);
-    if (!dir.exists() || dir.isEmpty())
+    if (!dir.exists() || dir.count()==2)
     {
         errorImage();
     }
